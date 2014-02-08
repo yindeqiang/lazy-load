@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>图片延迟加载</title>
+	<style>
+		.img-div{
+			width:800px;
+			height:450px;
+			margin:0 auto 50px;
+			border:1px solid #000;
+			overflow:hidden;
+		}
+		
+		.img-div img{
+			width:800px;
+			background-repeat:no-repeat;
+		}
+	</style>
+</head>
+<body>
+  <script>
+	window.onload = function(){
+	
+		//获取图片
+		var imgs = document.getElementsByTagName("img");
+		//将nodelist转换为数组
+		imgs = Array.prototype.slice.call(imgs,0);
+		
+		//获取元素在页面绝对位置的尺寸
+		function getOffset(obj){
+			var left = obj.offsetLeft,
+				top = obj.offsetTop;
+				
+			while(obj = obj.offsetParent){
+				if(obj.nodeName === "HTML") break;
+				
+				left += obj.offsetLeft;
+				top += obj.offsetTop;
+			}
+			return {'left': left, 'top': top};
+		}
+		
+		//判断元素是否在显示窗口内
+		function isInWindow(obj){
+			var position = getOffset(obj);
+			var left = position.left;
+			var top = position.top;
+			
+			var H = document.documentElement ? document.documentElement.clientHeight : document.body.clientHeight;
+			var W = document.documentElement ? document.documentElement.clientWidth : document.body.clientWidth;
+			
+			var h = obj.clientHeight;
+			var w = obj.clientWidth;
+			
+			var st = document.documentElement ? document.documentElement.scrollTop : document.body.scrollTop; 
+			var sl = document.documentElement ? document.documentElement.scrollLeft : document.body.scrollLeft;
+			
+			//先判断y向，再判断x向
+			if(top + h > st && top<st+H){
+				if(left+w > sl && left<sl+W){
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		//显示图片
+		function showImg(img){
+			var lazySrc = img.getAttribute("lazy-src");
+			if(lazySrc){
+				img.style.background = "url("+lazySrc+")";
+			}
+		}
+		
+		//加载
+		function loadImage(){
+			var len = imgs.length;
+			if(len <= 0) return;
+			
+			var i = 0;
+			while(imgs.length > 0 && i < imgs.length){
+				if(isInWindow(imgs[i])){
+					showImg(imgs[i]);
+					imgs.splice( i, 1);
+					continue;
+				}
+				i++;
+			}
+		}
+		
+		//注册滚动事件
+		window.onscroll = loadImage;
+		
+		loadImage();
+	
+	}
+  </script>
+<div class="img-div">
+	<img src="http://g.tbcdn.cn/s.gif" lazy-src="http://img.pconline.com.cn/images/upload/upc/tx/wallpaper/1402/07/c1/31051499_1391741766685_800x600.jpg" />
+</div>
+<div class="img-div">
+	<img src="http://g.tbcdn.cn/s.gif" lazy-src="http://img.pconline.com.cn/images/upload/upc/tx/wallpaper/1402/07/c1/31051501_1391741769583_800x600.jpg" />
+</div>
+
+<div class="img-div">
+	<img src="http://g.tbcdn.cn/s.gif" lazy-src="http://img.pconline.com.cn/images/upload/upc/tx/wallpaper/1402/07/c1/31051502_1391741771248_800x600.jpg" />
+</div>
+
+<div class="img-div">
+	<img src="http://g.tbcdn.cn/s.gif" lazy-src="http://img.pconline.com.cn/images/upload/upc/tx/wallpaper/1402/07/c1/31051504_1391741772506_800x600.jpg" />
+</div>
+
+<div class="img-div">
+	<img src="http://g.tbcdn.cn/s.gif" lazy-src="http://img.pconline.com.cn/images/upload/upc/tx/wallpaper/1402/07/c1/31051505_1391741774202_800x600.jpg" />
+</div>
+
+<div class="img-div">
+	<img src="http://g.tbcdn.cn/s.gif" lazy-src="http://img.pconline.com.cn/images/upload/upc/tx/wallpaper/1402/07/c1/31051507_1391741775418_800x600.jpg" />
+</div>
+</body>
+</html>
+
